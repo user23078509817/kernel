@@ -10,8 +10,8 @@ build: build-arch build-kernel
 	dd if=/dev/zero of=floppy.img bs=512 count=2880
 
 	dd if=arch/x86/boot/boot.bin of=floppy.img
-	dd if=arch/x86/boot/core.bin of=floppy.img bs=512 seek=1 count=1 conv=notrunc
-	dd if=kernel/kernel.bin of=floppy.img bs=512 seek=2 count=1 conv=notrunc
+	#dd if=arch/x86/boot/core.bin of=floppy.img bs=512 seek=1 count=1 conv=notrunc
+	dd if=kernel/kernel.bin of=floppy.img bs=512 seek=1 count=1 conv=notrunc
 
 	dd if=/dev/zero bs=512 count=2880 >> floppy.img
 

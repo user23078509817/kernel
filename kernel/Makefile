@@ -1,7 +1,6 @@
+include ../Makefile.config
+
 # Define variables
-CC = gcc
-CFLAGS = -m32 -ffreestanding -fno-pie -O0
-LDFLAGS = -m32 -nostdlib -lgcc -Wl,--oformat,binary -Wl,-e,main
 TARGET = kernel.bin
 SRC = main.c
 OBJ = main.o
@@ -13,7 +12,7 @@ all: $(TARGET)
 
 # Rule to create the target binary
 $(TARGET): $(OBJ)
-	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJ) -T linker.ld
+	$(LD) -Ttext 0x10000 --oformat binary -o $(TARGET) ../arch/x86/boot/kernelcore.o $(OBJ)
 
 # Rule to compile the source file into an object file
 $(OBJ): $(SRC)

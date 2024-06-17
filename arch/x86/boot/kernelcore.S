@@ -1,58 +1,44 @@
+#include "../memlayout.h"
+
 .code16
-
-.equ CODE_SEG, gdt_code - gdt
-.equ DATA_SEG, gdt_data - gdt
-
+.text
+.global _start
 _start:
-    jmp load_gdt
+    jmp _realstart
 
-gdt:
-gdt_null:
-    .long 0
-    .long 0
-
-gdt_code:
-    .word 0xFFFF         # Limit (16 bits)
-    .word 0              # Base (16 bits)
-    .byte 0              # Base (8 bits, continued)
-    .byte 0x9A           # Access byte: present, ring 0, code segment, executable, conforming
-    .byte 0xCF           # Granularity byte: 4KB granularity, 32-bit segment
-    .byte 0              # Base (8 bits, continued)
-
-gdt_data:
-    .word 0xFFFF         # Limit (16 bits)
-    .word 0              # Base (16 bits)
-    .byte 0              # Base (8 bits, continued)
-    .byte 0x92           # Access byte: present, ring 0, data segment, writable
-    .byte 0xCF           # Granularity byte: 4KB granularity, 32-bit segment
-    .byte 0              # Base (8 bits, continued)
-
-gdt_end:
-
-gdt_desc:
-    .word gdt_end - gdt - 1  # Limit
-    .long gdt                # Base
-
-load_gdt:
+_realstart:
     cli
-    lgdt gdt_desc
+
+    # Load GDT
+    lgdt (gdt_init-_start)
 
     # Enter protected mode
     mov %cr0, %eax
     or $1, %eax
     mov %eax, %cr0
-    ljmp $CODE_SEG, $clear_pipe
+
+    mov	$(2*8), %ax		# selector two is flat 4GB data data
+	mov	%ax, %ds		# set data, extra, and stack segments to selector two
+	mov	%ax, %es
+	mov	%ax, %ss
+
+    # Far jump to flush prefetch queue and switch to protected mode
+    ljmpl $(1*8), $(kernel_main)
 
 .code32
-clear_pipe:
 
-    # Set up the stack pointer
-    mov $0xFFF0, %esp
+.align 16
+.global gdt
+gdt:
+	.word	0,0,0,0				# seg 0 - null
+	.word	0xffff, 0x0000, 0x9a00, 0x00cf	# seg 1 - kernel flat 4GB code
+	.word	0xffff, 0x0000, 0x9200, 0x00cf	# seg 2 - kernel flat 4GB data
+	.word	0xffff, 0x0000, 0xfa00, 0x00cf	# seg 3 - user flat 4GB code
+	.word	0xffff, 0x0000, 0xf200, 0x00cf	# seg 4 - user flat 4GB data
+	
+# This is the initializer for the global descriptor table.
+# It simply tells us the size and location of the table.
 
-    mov $DATA_SEG, %ax
-    mov %ax, %ds        # Set DS to 0
-    mov %ax, %es        # Set ES to 0
-    mov %ax, %ss        # Set SS to 0
-
-    # Infinite loop to halt the CPU
-    #jmp 0x10000
+gdt_init:
+	.word	gdt_init-gdt
+	.long	gdt

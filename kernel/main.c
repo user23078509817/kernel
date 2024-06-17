@@ -1,10 +1,10 @@
 #include <stdint.h>
 
-char c = 'D';
-
-void main() {
+char c = 'X';
+//sdf
+void kernel_main() {
     char* video_memory = (char*) 0xb8000;
-    *video_memory = c;
+    *video_memory = 'D';
 
     for(;;){
 
