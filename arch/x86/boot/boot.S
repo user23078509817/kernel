@@ -15,6 +15,10 @@ _start:
 	mov	%ax, %ds
 	mov	%ax, %es
 
+    mov	$INTERRUPT_STACK_SEGMENT, %ax     # set up the stack
+	mov	%ax, %ss
+	mov	$INTERRUPT_STACK_OFFSET, %sp
+
     # Print a message
     mov $msg, %si
     call print_string

@@ -9,6 +9,10 @@ _start:
 _realstart:
     cli
 
+    inb $0x92, %al
+    orb $2, %al
+    outb %al, $0x92
+
     # Load GDT
     lgdt (gdt_init-_start)
 
@@ -21,6 +25,13 @@ _realstart:
 	mov	%ax, %ds		# set data, extra, and stack segments to selector two
 	mov	%ax, %es
 	mov	%ax, %ss
+
+    xor %ax, %ax
+    mov %ax, %fs
+    mov %ax, %gs
+
+    mov	$INTERRUPT_STACK_TOP, %sp    # set up initial C stack
+	mov	$INTERRUPT_STACK_TOP, %bp    # set up initial C stack
 
     # Far jump to flush prefetch queue and switch to protected mode
     ljmpl $(1*8), $(kernel_main)

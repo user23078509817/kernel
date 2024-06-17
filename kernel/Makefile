@@ -12,7 +12,7 @@ all: $(TARGET)
 
 # Rule to create the target binary
 $(TARGET): $(OBJ)
-	$(LD) -Ttext 0x10000 --oformat binary -o $(TARGET) ../arch/x86/boot/kernelcore.o $(OBJ)
+	$(LD) $(LDFLAGS) -e _start -T linker.ld --oformat binary -o $(TARGET) ../arch/x86/boot/kernelcore.o $(OBJ)
 
 # Rule to compile the source file into an object file
 $(OBJ): $(SRC)
