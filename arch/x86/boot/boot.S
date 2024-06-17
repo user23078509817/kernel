@@ -7,7 +7,7 @@
 .text
 
 ljmp $BOOTBLOCK_SEGMENT, $_start
-
+ 
 _start:
     cli                # Disable interrupts
     cld				# clear the direction flag
@@ -28,7 +28,7 @@ _start:
 
     movw $0x0000, %bx    # Destination offset within segment (ES:BX)
     movb $0x02, %ah      # BIOS read sector function
-    movb $0x01, %al      # Number of sectors to read (1 sector)
+    movb $0x30, %al      # Number of sectors to read (1 sector)
     movb $0x00, %ch      # Cylinder number
     movb $0x00, %dh      # Head number
     movb $0x02, %cl      # Sector number

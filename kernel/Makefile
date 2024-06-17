@@ -1,7 +1,7 @@
 include ../Makefile.config
 
 # Define variables
-TARGET = kernel.bin
+TARGET = kernel.elf
 SRC = main.c
 OBJ = main.o
 
@@ -12,7 +12,8 @@ all: $(TARGET)
 
 # Rule to create the target binary
 $(TARGET): $(OBJ)
-	$(LD) $(LDFLAGS) -e _start -T linker.ld --oformat binary -o $(TARGET) ../arch/x86/boot/kernelcore.o $(OBJ)
+	$(LD) $(LDFLAGS) -e _start -Ttext 0x10000 -o $(TARGET) ../arch/x86/boot/kernelcore.o $(OBJ)
+	objcopy -O binary kernel.elf kernel.bin
 
 # Rule to compile the source file into an object file
 $(OBJ): $(SRC)

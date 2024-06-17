@@ -1,6 +1,7 @@
 #include <stdint.h>
 
-char c = 'E';
+int i;
+char c = 'F';
 
 void kernel_main() {
     char* video_memory = (char*) 0xb8000;
