@@ -6,13 +6,21 @@ run:
 	qemu-system-i386 floppy.img -monitor stdio
 
 build: build-arch build-kernel
+	# Create a 1.44MB floppy image filled with zeros
+	#dd if=/dev/zero of=floppy.img bs=512 count=2880
 
-	dd if=/dev/zero of=floppy.img bs=512 count=2880
+	# Write the boot sector to the first sector
+	dd if=arch/x86/boot/boot.bin of=floppy.img bs=512 count=1 conv=notrunc
 
-	dd if=arch/x86/boot/boot.bin of=floppy.img
+	# Calculate the size of the kernel in sectors (rounding up)
+	# Pad the sectors where the kernel will be placed with zeros
+	dd if=/dev/zero bs=512 seek=1 count=$(shell echo $$((($$(stat -c%s kernel/kernel.bin) + 511) / 512))) of=floppy.img conv=notrunc
+
+	# Write the kernel to the image starting from the second sector
 	dd if=kernel/kernel.bin of=floppy.img bs=512 seek=1 conv=notrunc
 
-	dd if=/dev/zero bs=512 count=2880 >> floppy.img
+	# Write the kernel signature after the kernel
+	cat arch/x86/boot/kernelsig.bin >> floppy.img
 
 build-kernel:
 	$(MAKE) -C kernel
