@@ -28,7 +28,7 @@ _start:
     movb $0x02, %cl      # Sector number
 
 load:
-    movw last_sector, %bx    # Destination offset within segment (ES:BX)
+    movw (last_sector), %bx    # Destination offset within segment (ES:BX)
     movb $0x02, %ah      # BIOS read sector function
     movb $0x01, %al      # Number of sectors to read (1 sector)
     movb $0x00, %ch      # Cylinder number
@@ -40,25 +40,21 @@ load:
     jmp loadnext
 
 loadnext:
-    mov (sectors_loaded), %ax
-    inc %ax
-    mov %ax, (sectors_loaded)
-
-    inc %cl
-
     mov (last_sector), %bx
     add $512, %bx
     mov %bx, (last_sector)
 
+    inc %cl
+
     mov $KERNEL_SEGMENT, %ax
     mov %ax, %ds
 
-    movw -1(%bx), %ax
+    movw -2(%bx), %ax
 
-    cmpw $0xaa55, %ax
+    cmpw $0x55aa, %ax
 
-    #mov %cs, %ax
-    #mov %ax, %ds
+    mov %cs, %ax
+    mov %ax, %ds
 
     je loaddone
 
@@ -85,6 +81,9 @@ disk_error:
 #
 # Helper Functions
 #
+
+hlt:
+    jmp .
 
 print_string:
     .loop:
