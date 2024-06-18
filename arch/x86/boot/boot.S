@@ -28,6 +28,8 @@ _start:
     movb $0x02, %cl      # Sector number
 
 load:
+    mov %cs, %ax        # reset ds segment register
+    mov %ax, %ds        
     movw (last_sector), %bx    # Destination offset within segment (ES:BX)
     movb $0x02, %ah      # BIOS read sector function
     movb $0x01, %al      # Number of sectors to read (1 sector)
@@ -49,16 +51,9 @@ loadnext:
     mov $KERNEL_SEGMENT, %ax
     mov %ax, %ds
 
-    movw -2(%bx), %ax
+    mov $-16, %si
 
-    cmpw $0x55aa, %ax
-
-    mov %cs, %ax
-    mov %ax, %ds
-
-    je loaddone
-
-    jmp load
+    jmp load_checksig
 
 loaddone:
     mov $KERNEL_SEGMENT, %ax
@@ -71,6 +66,21 @@ loaddone:
     mov (sectors_loaded), %ax
 
     ljmp $KERNEL_SEGMENT, $KERNEL_OFFSET            # Jump to the loaded code (adjust as needed)
+
+load_checksig:
+
+    cmp $0, %si
+    je loaddone
+
+    movw (%bx, %si), %ax
+
+    cmpw $0x55aa, %ax
+
+    jne load
+
+    add $2, %si         # calc new offset
+
+    jmp load_checksig    # 55aa found -> next iteration
 
 disk_error:
     # Print error message and halt
