@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "globals.h": "c",
+        "graphics.h": "c",
+        "console.h": "c",
+        "stdint.h": "c",
+        "kmalloc.h": "c",
+        "string.h": "c"
+    }
+}

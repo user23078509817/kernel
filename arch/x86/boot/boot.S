@@ -1,4 +1,4 @@
-#include "../memlayout.h"
+#include "../../../kernel/memlayout.h"
 
 .global _start
 

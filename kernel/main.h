@@ -1,1 +1,2 @@
-extern char c;
+#pragma once
+#include <stdint.h>

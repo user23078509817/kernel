@@ -2,8 +2,7 @@ include ../Makefile.config
 
 # Define variables
 TARGET = kernel.elf
-SRC = main.c
-OBJ = main.o
+OBJ = main.o kmalloc.o graphics.o font.o bitmap.o console.o printf.o string.o
 
 .PHONY: all clean
 
@@ -15,10 +14,11 @@ $(TARGET): $(OBJ)
 	$(LD) $(LDFLAGS) -e _start -Ttext 0x10000 -o $(TARGET) ../arch/x86/boot/kernelcore.o $(OBJ)
 	objcopy -O binary kernel.elf kernel.bin
 
-# Rule to compile the source file into an object file
-$(OBJ): $(SRC)
-	$(CC) $(CFLAGS) -c -o $(OBJ) $(SRC)
+%.o: %.c
+	${CC} ${KERNEL_CCFLAGS}  $< -o $@
 
+%.o: %.S
+	${CC} ${KERNEL_CCFLAGS}  $< -o $@
 # Clean up generated files
 clean:
 	rm -f $(OBJ) $(TARGET)

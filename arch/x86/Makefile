@@ -5,7 +5,9 @@ OBJS = $(SRCS:.c=.o)
 
 .PHONY: all clean
 
-all: build_bootloader build_kernelentry build_kernelsig
+all: build_bootloader build_kernelentry build_kernelsig build
+
+build: $(OBJS)
 
 build_bootloader: boot/boot.o
 	$(LD) -Ttext 0 --oformat binary -o boot/boot.bin $<
