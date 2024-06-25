@@ -7,7 +7,10 @@ _start:
     jmp _realstart
 
 _realstart:
-    cli
+
+	mov $0x4f00, %ax
+	mov $(vesa_info-_start),%di
+	int $0x10
 
 	mov	$0x4f02, %ax
  	movw $0x4118, %bx
@@ -20,12 +23,12 @@ _realstart:
 	mov	$0x4f01, %ax
 	mov	%bx, %cx
 	int	$0x10
-
+	
 	# enable A20 line
     inb $0x92, %al      
     orb $2, %al
     outb %al, $0x92
-        
+
     # Load GDT
     lgdt (gdt_init-_start)
 
@@ -52,12 +55,21 @@ _realstart:
 .code32
 
 pm_start:
+	mov $0xfd000000, %eax
+	mov $0xff, (%eax);
+	jmp .
 	ljmpl $(1*8), $(kernel_main)
 
 # The video_info structure is filled in by a BIOS
 # call above, and is used to record the basic video
 # layout for the graphics subsystem.  See page 30
 # of the VBE specification for an explanation of this structure.
+
+.align 4
+vesa_info:
+.rept 508
+	.byte 0
+.endr
 
 .align 4
 video_info:

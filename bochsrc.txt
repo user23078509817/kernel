@@ -1,0 +1,9 @@
+# bochsrc.txt
+megs: 32
+display_library: sdl2
+boot: disk
+floppya: 1_44=floppy.img, status=inserted
+ata0-master: type=disk, path="disk.img", mode=flat, cylinders=20, heads=16, spt=63
+mouse: enabled=0
+log: bochsout.txt
+clock: sync=realtime, time0=local

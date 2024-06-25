@@ -28,6 +28,12 @@ static void printf_putstr(char* str){
 }
 
 static void printf_puthexstr(int i){
+    console_putchar(hex_codes[i >> 28 & 15]);
+    console_putchar(hex_codes[i >> 24 & 15]);
+    console_putchar(hex_codes[i >> 20 & 15]);
+    console_putchar(hex_codes[i >> 16 & 15]);
+    console_putchar(hex_codes[i >> 12 & 15]);
+    console_putchar(hex_codes[i >> 8 & 15]);
     console_putchar(hex_codes[i >> 4 & 15]);
     console_putchar(hex_codes[i & 15]);
 }

@@ -3,7 +3,7 @@
 all: build
 
 run:
-	qemu-system-x86_64 floppy.img -monitor stdio
+	qemu-system-x86_64 -drive format=raw,file=floppy.img -vga std -monitor stdio
 
 build: build-arch build-kernel
 	# Create a 1.44MB floppy image filled with zeros
