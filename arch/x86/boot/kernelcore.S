@@ -55,9 +55,6 @@ _realstart:
 .code32
 
 pm_start:
-	mov $0xfd000000, %eax
-	mov $0xff, (%eax);
-	jmp .
 	ljmpl $(1*8), $(kernel_main)
 
 # The video_info structure is filled in by a BIOS
